@@ -245,6 +245,37 @@ static const prom_t proms[] = {
 	.lo_pins	= { 12, 20, },
 },
 {
+	/** 256x4 PROM -- UNTESTED */	
+	.name		= "TBP24S10",
+	.pins		= 16,
+	.addr_width	= 8,
+	.addr_pins	= {
+		5, 6, 7, 4, 3, 2, 1, 15,
+	},
+	.data_width	= 4,
+	.data_pins	= {
+		12, 11, 10, 9,
+	},
+	.hi_pins	= { 16 },
+	.lo_pins	= { 8, 13, 14 },
+},
+{
+	/** 512x8 PROM -- UNTESTED */	
+	.name		= "TBP28S42",
+	.pins		= 20,
+	.addr_width	= 9,
+	.addr_pins	= {
+		1, 2, 3, 4, 5, 16, 17, 18, 19,
+	},
+	.data_width	= 8,
+	.data_pins	= {
+		6, 7, 8, 9, 11, 12, 13, 14,
+	},
+	.hi_pins	= { 20 },
+	.lo_pins	= { 10, 15 },
+},
+
+{
 	/** 8192x8 UV EEPROM, found in DX synth */
 	.name		= "MBM2764-30",
 	.pins		= 28,
