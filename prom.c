@@ -100,6 +100,7 @@ static const uint8_t ports[ZIF_PINS+1] = {
 };
 
 #define OPTIONS_PULLUPS 0x01
+#define OPTIONS_LATCH   0x02
 
 typedef struct
 {
@@ -234,8 +235,9 @@ static const prom_t proms[] = {
 	.lo_pins	= { 22, 20, 14, },
 },
 {
+#define LATCH_PIN 0
 	.name		= "87C64",
-	.options 	= OPTIONS_PULLUPS,
+	.options 	= OPTIONS_PULLUPS | OPTIONS_LATCH,
 	.pins		= 28,
 	.addr_width	= 13,
 	.addr_pins	= {
@@ -247,7 +249,10 @@ static const prom_t proms[] = {
 		11, 12, 13, 15, 16, 17, 18, 19,
 	},
 	.hi_pins	= { 28, 1, 27 },
-	.lo_pins	= { 22, 20, 14, },
+	.lo_pins	= { 
+		[LATCH_PIN] = 20,
+		22, 14, 
+	},
 },
 {
 	.name		= "C64-2732",
@@ -726,7 +731,15 @@ prom_read(
 	if (prom->data_width == 0)
 		return isp_read(addr);
 
+	uint8_t latch = (prom->options & OPTIONS_LATCH) != 0;
+	uint8_t latch_pin = prom_pin(prom->lo_pins[LATCH_PIN]);
+	if (latch) {
+		out(latch_pin,1);
+	}
 	prom_set_address(addr);
+	if (latch) {
+		out(latch_pin,0);
+	}
 	for(uint8_t i = 0 ; i < 255; i++)
 	{
 		asm("nop");
