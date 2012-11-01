@@ -99,11 +99,15 @@ static const uint8_t ports[ZIF_PINS+1] = {
 	[40]	= 0xB7,
 };
 
+#define OPTIONS_PULLUPS 0x01
 
 typedef struct
 {
 	/** Name of the chip type */
 	char name[16];
+
+	/** Options for chip, including pullup */
+	uint8_t options;
 
 	/** Total number of pins on the chip */
 	uint8_t pins;
@@ -230,6 +234,22 @@ static const prom_t proms[] = {
 	.lo_pins	= { 22, 20, 14, },
 },
 {
+	.name		= "87C64",
+	.options 	= OPTIONS_PULLUPS,
+	.pins		= 28,
+	.addr_width	= 13,
+	.addr_pins	= {
+		10, 9, 8, 7, 6, 5, 4, 3, 25, 24, 21, 23, 2,
+	},
+
+	.data_width	= 8,
+	.data_pins	= {
+		11, 12, 13, 15, 16, 17, 18, 19,
+	},
+	.hi_pins	= { 28, 1, 27 },
+	.lo_pins	= { 22, 20, 14, },
+},
+{
 	.name		= "C64-2732",
 	.pins		= 24,
 	.addr_width	= 12,
@@ -243,21 +263,6 @@ static const prom_t proms[] = {
 	},
 	.hi_pins	= { 24, 21 },
 	.lo_pins	= { 12, 20, },
-},
-{
-	/** 256x4 PROM -- UNTESTED */	
-	.name		= "TBP24S10",
-	.pins		= 16,
-	.addr_width	= 8,
-	.addr_pins	= {
-		5, 6, 7, 4, 3, 2, 1, 15,
-	},
-	.data_width	= 4,
-	.data_pins	= {
-		12, 11, 10, 9,
-	},
-	.hi_pins	= { 16 },
-	.lo_pins	= { 8, 13, 14 },
 },
 {
 	/** 512x8 PROM -- UNTESTED */	
@@ -623,13 +628,17 @@ prom_setup(void)
 	}
 
 	// Configure all of the data pins as inputs,
-	// no pull ups enabled.
+	// Enable pullups if specified.
 	for (uint8_t i = 0 ; i < array_count(prom->data_pins) ; i++)
 	{
 		uint8_t pin = prom_pin(prom->data_pins[i]);
 		if (pin == 0)
 			continue;
-		out(pin, 0);
+		if ((prom->options & OPTIONS_PULLUPS) != 0) {
+			out(pin, 1);
+		} else {
+			out(pin, 0);
+		}
 		ddr(pin, 0);
 	}
 
