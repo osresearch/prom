@@ -200,6 +200,21 @@ static const prom_t proms[] = {
 	.lo_pins	= { 22, 20, 14, },
 },
 {
+	.name		= "M27C128",
+	.pins		= 28,
+	.addr_width	= 14,
+	.addr_pins	= {
+		10, 9, 8, 7, 6, 5, 4, 3, 25, 24, 21, 23, 2, 26,
+	},
+
+	.data_width	= 8,
+	.data_pins	= {
+		11, 12, 13, 15, 16, 17, 18, 19,
+	},
+	.hi_pins	= { 28, 1, 27, },
+	.lo_pins	= { 22, 20, 14, },
+},
+{
 	.name		= "M27C64",
 	.pins		= 28,
 	.addr_width	= 13,
@@ -250,6 +265,29 @@ static const prom_t proms[] = {
 	.lo_pins	= { 22, 20, 14, }, // !oe, !cs, gnd
 },
 {
+	// C64 kernel and basic ROMs
+	.name		= "27C210",
+	.pins		= 40,
+	.addr_width	= 16,
+	.addr_pins	= {
+    21, 22, 23, 24, 25, 26, 27, 28, 29, 31, 32, 33, 34, 35, 36, 37,
+	},
+	.data_width	= 16,
+	.data_pins	= {
+    19, 18, 17, 16, 15, 14, 13, 12, 10,  9,  8,  7,  6,  5,  4,  3,
+	},
+	.hi_pins	= {
+    40, // VCC
+    1,  // VPP
+    39, // PGM'
+	},
+	.lo_pins	= {
+    2, // E'
+    11, 30, // GND
+    20, // G'
+	},
+},
+{
 	/** Apple Mac SE PROM chips
 	 * Similar to a M27C512, but with the 17th address line
 	 * on 22 instead of Vpp, allowing 128 KB of data.
@@ -267,44 +305,6 @@ static const prom_t proms[] = {
 	},
 	.hi_pins	= { 28, },
 	.lo_pins	= { 20, 14, },
-},
-{
-	/** 2716 mask ROM used in video games.
-	 * \note: Not tested yet.
-	 */
-	.name		= "2716 (untested)",
-	.pins		= 24,
-	.addr_width	= 11,
-	.addr_pins	= {
-		8, 7, 6, 5, 4, 3, 2, 1, 23, 22, 19,
-	},
-
-	.data_width	= 8,
-	.data_pins	= {
-		9, 10, 11, 13, 14, 15, 16, 17
-	},
-
-	.hi_pins	= { 24, 21, },
-	.lo_pins	= { 12, 20, 18 },
-},
-{
-	/** 9316 mask ROM used in video games.
-	 * \note: Not tested yet.
-	 */
-	.name		= "9316 (untested)",
-	.pins		= 24,
-	.addr_width	= 11,
-	.addr_pins	= {
-		8, 7, 6, 5, 4, 3, 2, 1, 23, 22, 19,
-	},
-
-	.data_width	= 8,
-	.data_pins	= {
-		9, 10, 11, 13, 14, 15, 16, 17
-	},
-
-	.hi_pins	= { 24, 18, },
-	.lo_pins	= { 12, 21, 20 },
 },
 {
 	.name		= "28F512 (untstd)",
@@ -347,6 +347,44 @@ static const prom_t proms[] = {
 		12, // gnd
 		20, // !cs
 	},
+},
+{
+	/** 2716 mask ROM used in video games.
+	 * \note: Not tested yet.
+	 */
+	.name		= "2716 (untested)",
+	.pins		= 24,
+	.addr_width	= 11,
+	.addr_pins	= {
+		8, 7, 6, 5, 4, 3, 2, 1, 23, 22, 19,
+	},
+
+	.data_width	= 8,
+	.data_pins	= {
+		9, 10, 11, 13, 14, 15, 16, 17
+	},
+
+	.hi_pins	= { 24, 21, },
+	.lo_pins	= { 12, 20, 18 },
+},
+{
+	/** 9316 mask ROM used in video games.
+	 * \note: Not tested yet.
+	 */
+	.name		= "9316 (untested)",
+	.pins		= 24,
+	.addr_width	= 11,
+	.addr_pins	= {
+		8, 7, 6, 5, 4, 3, 2, 1, 23, 22, 19,
+	},
+
+	.data_width	= 8,
+	.data_pins	= {
+		9, 10, 11, 13, 14, 15, 16, 17
+	},
+
+	.hi_pins	= { 24, 18, },
+	.lo_pins	= { 12, 21, 20 },
 },
 {
 	.name		= "HN462732",
