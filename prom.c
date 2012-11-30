@@ -154,6 +154,7 @@ typedef struct
 	uint8_t lo_pins[8];
 } prom_t;
 
+#define LATCH_PIN 0
 
 static const prom_t proms[] = {
 {
@@ -220,6 +221,24 @@ static const prom_t proms[] = {
 	.lo_pins	= { 22, 20, 14, },
 },
 {
+	.name		= "LH-535618",
+    .options 	= OPTIONS_PULLUPS | OPTIONS_LATCH,
+	.pins		= 28,
+	.addr_width	= 15,
+	.addr_pins	= {
+    10, 9, 8, 7, 6, 5, 4, 3, 26, 25, 2, 20, 24, 22, 28,
+	},
+
+	.data_width	= 8,
+	.data_pins	= {
+		11, 12, 13, 15, 16, 17, 18, 19,
+	},
+	.hi_pins	= { 1, },
+	.lo_pins	= { 
+    [LATCH_PIN] = 23,
+    21, 27, 14, },
+},
+{
 	.name		= "M27C64",
 	.pins		= 28,
 	.addr_width	= 13,
@@ -235,7 +254,6 @@ static const prom_t proms[] = {
 	.lo_pins	= { 22, 20, 14, },
 },
 {
-#define LATCH_PIN 0
 	.name		= "87C64",
 	.options 	= OPTIONS_PULLUPS | OPTIONS_LATCH,
 	.pins		= 28,
