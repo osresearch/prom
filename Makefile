@@ -46,6 +46,7 @@ TARGET = prom
 
 # List C source files here. (C dependencies are automatically generated.)
 SRC =	$(TARGET).c \
+	chips.c \
 	bits.c \
 	xmodem.c \
 	usb_serial.c \
@@ -263,7 +264,8 @@ LDFLAGS += $(patsubst %,-L%,$(EXTRALIBDIRS))
 LDFLAGS += $(PRINTF_LIB) $(SCANF_LIB) $(MATH_LIB)
 #LDFLAGS += -T linker_script.x
 
-
+#---------------- Platform detection -------------
+UNAME := $(shell uname)
 
 #---------------- Programming Options (avrdude) ----------------
 
@@ -274,7 +276,11 @@ LDFLAGS += $(PRINTF_LIB) $(SCANF_LIB) $(MATH_LIB)
 AVRDUDE_PROGRAMMER = stk500v2
 
 # com1 = serial port. Use lpt1 to connect to parallel port.
-AVRDUDE_PORT = com1    # programmer connected to serial device
+ifeq ($(UNAME), Linux)
+	AVRDUDE_PORT = /dev/ttyACM0    # programmer connected to serial device
+else
+	AVRDUDE_PORT = com1
+endif
 
 AVRDUDE_WRITE_FLASH = -U flash:w:$(TARGET).hex
 #AVRDUDE_WRITE_EEPROM = -U eeprom:w:$(TARGET).eep
@@ -335,7 +341,12 @@ DEBUG_HOST = localhost
 
 # Define programs and commands.
 SHELL = sh
-AVR_PATH = /Applications/Arduino.app/Contents//Resources/Java/hardware/tools/avr
+ifeq ($(UNAME), Linux)
+	AVR_PATH = /usr
+else
+	AVR_PATH = /Applications/Arduino.app/Contents//Resources/Java/hardware/tools/avr
+endif
+
 CC = $(AVR_PATH)/bin/avr-gcc
 OBJCOPY = $(AVR_PATH)/bin/avr-objcopy
 OBJDUMP = $(AVR_PATH)/bin/avr-objdump
@@ -448,7 +459,12 @@ gccversion :
 
 # Program the device.  
 program: $(TARGET).hex $(TARGET).eep
-	$(AVRDUDE) $(AVRDUDE_FLAGS) $(AVRDUDE_WRITE_FLASH) $(AVRDUDE_WRITE_EEPROM)
+	ifeq ($(UNAME), Linux)
+		~/opt/teensy_loader_cli/teensy_loader_cli -mmcu=$(MCU) -w $(TARGET).hex
+	else
+		$(AVRDUDE) $(AVRDUDE_FLAGS) $(AVRDUDE_WRITE_FLASH) $(AVRDUDE_WRITE_EEPROM)
+	endif
+
 
 
 # Generate avr-gdb config/init file which does the following:
