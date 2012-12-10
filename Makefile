@@ -458,12 +458,13 @@ gccversion :
 
 
 # Program the device.  
+ifeq ($(UNAME), Linux)
 program: $(TARGET).hex $(TARGET).eep
-	ifeq ($(UNAME), Linux)
-		~/opt/teensy_loader_cli/teensy_loader_cli -mmcu=$(MCU) -w $(TARGET).hex
-	else
-		$(AVRDUDE) $(AVRDUDE_FLAGS) $(AVRDUDE_WRITE_FLASH) $(AVRDUDE_WRITE_EEPROM)
-	endif
+	~/opt/teensy_loader_cli/teensy_loader_cli -mmcu=$(MCU) -w $(TARGET).hex
+else
+program: $(TARGET).hex $(TARGET).eep
+	$(AVRDUDE) $(AVRDUDE_FLAGS) $(AVRDUDE_WRITE_FLASH) $(AVRDUDE_WRITE_EEPROM)
+endif
 
 
 

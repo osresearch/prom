@@ -16,6 +16,7 @@
 #include "chips.h"
 
 void send_str(const char *s);
+void send_mem_str(const char *s);
 uint8_t recv_str(char *buf, uint8_t size);
 void parse_and_execute_command(const char *buf, uint8_t num);
 
@@ -461,21 +462,20 @@ hexdump(
 
 /** Read an address from the serial port, then read that from the PROM */
 static void
-read_addr(void)
+read_addr(char* buffer)
 {
 	uint32_t addr = 0;
+	uint8_t buf_idx = 0;
 	while (1)
 	{
-		uint8_t c = usb_serial_getchar_echo();
-		if (c == '\r')
-			break;
-		if (c == '\n')
-			continue;
-		uint8_t n = hexdigit_parse(c);
-		if (n == 0xFF)
-			goto error;
-
-		addr = (addr << 4) | n;
+	  uint8_t c = buffer[buf_idx++];
+	  if (c == '\0')
+	    break;
+	  uint8_t n = hexdigit_parse(c);
+	  if (n == 0xFF)
+	    goto error;
+	  
+	  addr = (addr << 4) | n;
 	}
 
 	send_str(PSTR("\r\n"));
@@ -503,7 +503,6 @@ prom_list_send(
 )
 {
 	uint8_t buf[32];
-
 	uint8_t off = 0;
 	if (selected)
 	{
@@ -512,8 +511,10 @@ prom_list_send(
 		buf[off++] = '*';
 		buf[off++] = ' ';
 	}
-
-	buf[off++] = hexdigit(mode);
+	if (mode >= 16) {
+	  buf[off++] = hexdigit(mode / 16);
+	}
+	buf[off++] = hexdigit(mode % 16);
 	buf[off++] = ' ';
 	memcpy(buf+off, prom->name, sizeof(prom->name));
 	off += sizeof(prom->name);
@@ -528,7 +529,6 @@ prom_list_send(
 static void
 prom_list(void)
 {
-	send_str(PSTR("\r\n"));
 	for (int i = 0 ; i < proms_count ; i++)
 	{
 		const prom_t * const p = &proms[i];
@@ -538,26 +538,23 @@ prom_list(void)
 
 
 static void
-prom_mode(void)
+prom_mode(char* buffer)
 {
-	uint8_t c = usb_serial_getchar_echo();
-	send_str(PSTR("\r\n"));
-	if (c < '0' || '9' < c)
-	{
-		send_str(PSTR("?\r\n"));
-		return;
-	}
-
-	uint8_t mode = c - '0';
-	if (mode >= proms_count)
-	{
-		send_str(PSTR("?\r\n"));
-		return;
-	}
-
-	prom = &proms[mode];
-
-	prom_list_send(mode, prom, 1);
+  for (int i = 0; i < proms_count; i++) {
+    const char* a = proms[i].name;
+    const char* b = buffer;
+    char match = 1;
+    while (*a != '\0' && *b != '\0') {      
+      if (*a != *b) { match = 0; break; }
+      a++; b++;
+    }
+    if (match) {
+	prom = &proms[i];
+	prom_list_send(i, prom, 1);
+	return;
+    }
+  }    
+  send_str(PSTR("- No such chip\r\n"));
 }
 
 
@@ -668,28 +665,43 @@ int main(void)
 		off = 0;
 	}
 #else
+	#define MAX_CMD 64
+	char buffer[MAX_CMD];
+	uint8_t buf_idx = 0;
 	while (1)
 	{
 		// always put the PROM into tristate so that it is safe
 		// to swap the chips in between readings, and 
 		prom_tristate();
-
 		send_str(PSTR("> "));
-		char c = usb_serial_getchar_echo();
-		switch (c)
+
+		buf_idx = 0;
+		buffer[buf_idx] = 0;
+		while (1)
 		{
+		  // read in a line, processing on a newline, return, or
+		  // xmodem transfer nak
+		  char c = usb_serial_getchar_echo();
+		  if (c == XMODEM_NAK) { buffer[0] = XMODEM_NAK; buf_idx=1; break; }
+		  if (c == '\n') { send_str(PSTR("\r")); break; }
+		  if (c == '\r') { send_str(PSTR("\n")); break; }
+		  if (buf_idx < (MAX_CMD-1)) buffer[buf_idx++] = c;
+		}
+		buffer[buf_idx] = 0;
+		// process command
+		switch(buffer[0]) {
 		case XMODEM_NAK: prom_send(); break;
-		case 'r': read_addr(); break;
+		case 'r': read_addr(buffer+1); break;
 		case 'l': prom_list(); break;
-		case 'm': prom_mode(); break;
+		case 'm': prom_mode(buffer+1); break;
 		case 'i': isp_read(0); break;
 		case '\n': break;
 		case '\r': break;
 		default:
-			send_str(PSTR("\r\n"
+			send_str(PSTR(
 "r000000 Read a hex word from address\r\n"
 "l       List chip modes\r\n"
-"mN      Select chip N\r\n"
+"mTYPE   Select chip TYPE\r\n"
 			));
 			break;
 		}
@@ -708,5 +720,14 @@ void send_str(const char *s)
 		c = pgm_read_byte(s++);
 		if (!c) break;
 		usb_serial_putchar(c);
+	}
+}
+
+void send_mem_str(const char *s)
+{
+	while (1) {
+	  char c = *(s++);
+	  if (!c) break;
+	  usb_serial_putchar(c);
 	}
 }
