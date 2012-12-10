@@ -34,6 +34,8 @@ const prom_t proms[] = {
 
 	.hi_pins	= { 28, },
 	.lo_pins	= { 22, 20, 14, },
+	.vcc		= 28,
+	.gnd		= 14,
 },
 {
 	.name		= "M27C256",
@@ -49,6 +51,9 @@ const prom_t proms[] = {
 	},
 	.hi_pins	= { 28, 1 },
 	.lo_pins	= { 22, 20, 14, },
+
+	.vcc		= 28,
+	.gnd		= 14,
 },
 {
 	.name		= "M27C128",
@@ -64,6 +69,9 @@ const prom_t proms[] = {
 	},
 	.hi_pins	= { 28, 1, 27, },
 	.lo_pins	= { 22, 20, 14, },
+
+	.vcc		= 28,
+	.gnd		= 14,
 },
 {
 	.name		= "LH-535618",
@@ -82,6 +90,9 @@ const prom_t proms[] = {
 	.lo_pins	= { 
     [LATCH_PIN] = 23,
     21, 27, 14, },
+
+	.vcc		= 1,
+	.gnd		= 14,
 },
 {
 	.name		= "M27C64",
@@ -97,6 +108,9 @@ const prom_t proms[] = {
 	},
 	.hi_pins	= { 28, 1, 27 },
 	.lo_pins	= { 22, 20, 14, },
+
+	.vcc		= 28,
+	.gnd		= 14,
 },
 {
 	.name		= "87C64",
@@ -116,6 +130,9 @@ const prom_t proms[] = {
 		[LATCH_PIN] = 20,
 		22, 14, 
 	},
+
+	.vcc		= 28,
+	.gnd		= 14,
 },
 {
 	.name		= "C64-2732",
@@ -131,6 +148,9 @@ const prom_t proms[] = {
 	},
 	.hi_pins	= { 24, 21 },
 	.lo_pins	= { 12, 20, },
+
+	.vcc		= 24,
+	.gnd		= 12,
 },
 {
 	/** 512x8 PROM -- UNTESTED */	
@@ -190,6 +210,9 @@ const prom_t proms[] = {
     11, 30, // GND
     20, // G'
 	},
+
+	.vcc		= 40,
+	.gnd		= 11,
 },
 {
 	/** Apple Mac SE PROM chips
@@ -231,6 +254,9 @@ const prom_t proms[] = {
 		24, // !oe
 		22, // !ce
 	},
+
+	.vcc		= 32,
+	.gnd		= 16,
 },
 {
 	// C64 kernel and basic ROMs
@@ -251,6 +277,9 @@ const prom_t proms[] = {
 		12, // gnd
 		20, // !cs
 	},
+
+	.vcc		= 24,
+	.gnd		= 12,
 },
 {
 	/** 2716 mask ROM used in video games.
@@ -270,6 +299,9 @@ const prom_t proms[] = {
 
 	.hi_pins	= { 24, 21, },
 	.lo_pins	= { 12, 20, 18 },
+
+	.vcc		= 24,
+	.gnd		= 12,
 },
 {
 	/** 9316 mask ROM used in video games.
@@ -289,6 +321,9 @@ const prom_t proms[] = {
 
 	.hi_pins	= { 24, 18, },
 	.lo_pins	= { 12, 21, 20 },
+
+	.vcc		= 24,
+	.gnd		= 12,
 },
 {
 	.name		= "HN462732",
@@ -309,6 +344,9 @@ const prom_t proms[] = {
 		20, // !oe
 		18, // !ce
 	},
+
+	.vcc		= 24,
+	.gnd		= 12,
 },
 {
 	/** atmega8.
@@ -335,6 +373,9 @@ const prom_t proms[] = {
 		7, // vcc
 		20, // avcc
 	},
+
+	.vcc		= 7,
+	.gnd		= 8,
 },
 };
 

@@ -68,6 +68,19 @@ typedef struct
 	 * Typical power limits are sinking 50 mA per pin.
 	 */
 	uint8_t lo_pins[8];
+
+  /** Pin to use for VCC. This is primarily a documentation
+   * field for the user, so they know where to hook the VCC
+   * line.
+   */
+  uint8_t vcc;
+
+  /** Pin to use for ground. This is primarily a documentation
+   * field for the user, so they know where to hook the ground
+   * line.
+   */
+  uint8_t gnd;
+
 } prom_t;
 
 extern const prom_t proms[];
