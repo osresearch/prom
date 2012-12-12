@@ -754,6 +754,7 @@ int main(void)
 		case 'l': prom_list(); break;
 		case 'm': prom_mode(buffer+1); break;
 		case 'i': isp_read(0); break;
+		case 's': autoscan(); break;
 		case '\n': break;
 		case '\r': break;
 		default:
@@ -761,6 +762,7 @@ int main(void)
 "r000000 Read a hex word from address\r\n"
 "l       List chip modes\r\n"
 "mTYPE   Select chip TYPE\r\n"
+"s       Autoscan for chip type (POTENTIALLY DANGEROUS)\r\n"
 			));
 			break;
 		}
