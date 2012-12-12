@@ -536,7 +536,6 @@ prom_list(void)
 	}
 }
 
-
 static void
 prom_mode(char* buffer)
 {
@@ -557,6 +556,66 @@ prom_mode(char* buffer)
   send_str(PSTR("- No such chip\r\n"));
 }
 
+
+/**
+ * Scan the current chip against the EPROM definition given.
+ * A "successful" scan should yield:
+ * - Different data on each data pin
+ * - Consistent data across multiple scans
+ * - A check on high memory to ensure to disambiguate different
+ *   memory grades on the same/similar pinouts
+ * Return 1 on success, 0 otherwise.
+ */
+static uint8_t scan(const prom_t* use_prom) {
+  prom = use_prom;
+  prom_setup();
+  // scan first 256 bytes for varying data
+  uint8_t zeros = 0;
+  uint8_t ones = 0;
+  uint8_t block[16];
+  for (uint32_t addr = 0; addr < 256; addr += 16) {
+    for (uint8_t i = 0; i < 16; i++) {
+      block[i] = prom_read(addr+i);
+      zeros |= ~block[i];
+      ones |= block[i];
+    }
+    // reread and confirm
+    for (uint8_t i = 0; i < 16; i++) {
+      if (block[i] != prom_read(addr+i)) {
+	return 0;
+      }
+    }
+  }
+  // ensure that we're not just getting the same bits again and again
+  if (ones != 0xff || zeros != 0xff) { return 0; }
+  // check top half of memory. If first 256 bytes mirrors low memory
+  // or is the same byte, consider it a failure.
+  const uint32_t top_half_addr = (((uint32_t) 1) << prom->addr_width) >> 1;
+  uint8_t single_byte = prom_read(top_half_addr);
+  uint8_t same_byte_check = 1;
+  uint8_t same_data_check = 1;
+  for (uint8_t i = 0; i < 256; i++) {
+    uint8_t low = prom_read(i);
+    uint8_t high = prom_read(top_half_addr+i);
+    if (high != single_byte) { same_byte_check = 0; }
+    if (low != high) { same_data_check = 0; }
+  }
+  if (same_data_check || same_byte_check) { return 0; }
+  return 1;
+}
+
+/**
+ * Automatically scan all known EPROM types and attempt to construct a list of candidates.
+ */
+static void autoscan(void) {
+  prom_tristate();
+  for (int i = 0; i < proms_count; i++) {
+    if (scan(proms+i)) {
+      prom_list_send(i, prom, 1);
+    }
+    prom_tristate();
+  }
+}
 
 static xmodem_block_t xmodem_block;
 
