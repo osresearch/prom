@@ -74,6 +74,25 @@ const prom_t proms[] = {
 	.gnd		= 14,
 },
 {
+	.name		= "AM27C040",
+	.pins		= 32,
+	.addr_width	= 19,
+	.addr_pins	= {
+    12, 11, 10, 9, 8, 7, 6, 5, 
+    27, 26, 23, 25, 4, 28, 29, 3,
+    2, 30, 31, 
+  },
+	.data_width	= 8,
+	.data_pins	= {
+    13, 14, 15, 17, 18, 19, 20, 21,
+	},
+	.hi_pins	= { },
+	.lo_pins	= { 1, 22, 24, },
+
+	.vcc		= 32,
+	.gnd		= 16,
+},
+{
 	.name		= "LH-535618",
     .options 	= OPTIONS_PULLUPS | OPTIONS_LATCH,
 	.pins		= 28,
