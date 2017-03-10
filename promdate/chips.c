@@ -234,6 +234,32 @@ const prom_t proms[] = {
 	.gnd		= 11,
 },
 {
+	// Space laptop
+	.name		= "27C010",
+	.pins		= 32,
+	.addr_width	= 17,
+	.addr_pins	= {
+		12, 11, 10, 9, 8, 7, 6, 5, 27, 26, 23, 25, 4, 28, 29, 3, 2,
+	},
+	.data_width	= 8,
+	.data_pins	= {
+		13, 14, 15, 17, 18, 19, 20, 21,
+	},
+	.hi_pins	= {
+    32, // VCC
+    1,  // VPP
+    31, // PGM'
+	},
+	.lo_pins	= {
+    22, // E'
+    16, // GND
+    24, // G'
+	},
+
+	.vcc		= 32,
+	.gnd		= 16,
+},
+{
 	/** Apple Mac SE PROM chips
 	 * Similar to a M27C512, but with the 17th address line
 	 * on 22 instead of Vpp, allowing 128 KB of data.

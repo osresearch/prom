@@ -83,7 +83,7 @@ out(
 		return;
 	}
 
-	send_str(PSTR("bad\r\n"));
+	//send_str(PSTR("bad\r\n"));
 }
 
 

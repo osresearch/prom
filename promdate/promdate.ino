@@ -4,19 +4,16 @@
  * Read up to 40 pin DIP PROMs using a Teensy++ 2.0
  */
 
-#include <avr/io.h>
-#include <avr/pgmspace.h>
-#include <avr/interrupt.h>
+//#include <avr/io.h>
+//#include <avr/pgmspace.h>
+//#include <avr/interrupt.h>
 #include <stdint.h>
-#include <string.h>
+//#include <string.h>
 #include <util/delay.h>
-#include "usb_serial.h"
 #include "xmodem.h"
 #include "bits.h"
 #include "chips.h"
 
-void send_str(const char *s);
-void send_mem_str(const char *s);
 uint8_t recv_str(char *buf, uint8_t size);
 void parse_and_execute_command(const char *buf, uint8_t num);
 
@@ -58,47 +55,48 @@ printable(
 
 /** Mapping of AVR IO ports to the ZIF socket pins */
 static const uint8_t ports[ZIF_PINS+1] = {
-	[ 1]	= 0xB6,
-	[ 2]	= 0xB5,
-	[ 3]	= 0xB4,
-	[ 4]	= 0xB3,
-	[ 5]	= 0xB2,
-	[ 6]	= 0xB1,
-	[ 7]	= 0xB0,
-	[ 8]	= 0xE7,
-	[ 9]	= 0xE6,
-	[10]	= 0xA2,
-	[11]	= 0xA1,
-	[12]	= 0xF0,
-	[13]	= 0xF1,
-	[14]	= 0xF2,
-	[15]	= 0xF3,
-	[16]	= 0xF4,
-	[17]	= 0xF5,
-	[18]	= 0xF6,
-	[19]	= 0xF7,
-	[20]	= 0xA3,
+	0,
+	0xB6, // 1
+	0xB5,
+	0xB4,
+	0xB3,
+	0xB2,
+	0xB1,
+	0xB0,
+	0xE7,
+	0xE6,
+	0xA2,
+	0xA1,
+	0xF0,
+	0xF1,
+	0xF2,
+	0xF3,
+	0xF4,
+	0xF5,
+	0xF6,
+	0xF7,
+	0xA3, // 20
 
-	[21]	= 0xA7,
-	[22]	= 0xC7,
-	[23]	= 0xC6,
-	[24]	= 0xC5,
-	[25]	= 0xC4,
-	[26]	= 0xC3,
-	[27]	= 0xC2,
-	[28]	= 0xC1,
-	[29]	= 0xC0,
-	[30]	= 0xE1,
-	[31]	= 0xE0,
-	[32]	= 0xD7,
-	[33]	= 0xD6,
-	[34]	= 0xD5,
-	[35]	= 0xD4,
-	[36]	= 0xD3,
-	[37]	= 0xD2,
-	[38]	= 0xD1,
-	[39]	= 0xD0,
-	[40]	= 0xB7,
+	0xA7, // 21
+	0xC7,
+	0xC6,
+	0xC5,
+	0xC4,
+	0xC3,
+	0xC2,
+	0xC1,
+	0xC0,
+	0xE1,
+	0xE0,
+	0xD7,
+	0xD6,
+	0xD5,
+	0xD4,
+	0xD3,
+	0xD2,
+	0xD1,
+	0xD0,
+	0xB7, // 40
 };
 
 /** Select one of the chips */
@@ -202,7 +200,7 @@ isp_setup(void)
 		return 1;
 
 	// Now show what we read
-	uint8_t buf[10];
+	char buf[11];
 	buf[0] = hexdigit(rc1 >> 4);
 	buf[1] = hexdigit(rc1 >> 0);
 	buf[2] = hexdigit(rc2 >> 4);
@@ -211,11 +209,9 @@ isp_setup(void)
 	buf[5] = hexdigit(rc3 >> 0);
 	buf[6] = hexdigit(rc4 >> 4);
 	buf[7] = hexdigit(rc4 >> 0);
+	buf[8] = '\0';
 
-	buf[8] = '\r';
-	buf[9] = '\n';
-
-	usb_serial_write(buf, sizeof(buf));
+	Serial.println(buf);
 	return 0;
 }
 
@@ -390,13 +386,10 @@ usb_serial_getchar_echo(void)
 {
 	while (1)
 	{
-		while (usb_serial_available() == 0)
-			continue;
-
-		uint16_t c = usb_serial_getchar();
+		uint16_t c = Serial.read();
 		if (c == -1)
 			continue;
-		usb_serial_putchar(c);
+		Serial.print((char) c);
 		return c;
 	}
 }
@@ -437,7 +430,7 @@ hexdump(
 	uint32_t addr
 )
 {
-	uint8_t buf[80];
+	char buf[80];
 	hex32(buf, addr);
 
 	for (int i = 0 ; i < 16 ; i++)
@@ -455,8 +448,9 @@ hexdump(
 	buf[8 + 16 * 3 + 1] = ' ';
 	buf[8 + 16 * 3 + 18] = '\r';
 	buf[8 + 16 * 3 + 19] = '\n';
+	buf[8 + 16 * 3 + 20] = '\0';
 
-	usb_serial_write(buf, 8 + 16 * 3 + 20);
+	Serial.print(buf);
 }
 
 
@@ -478,7 +472,7 @@ read_addr(char* buffer)
 	  addr = (addr << 4) | n;
 	}
 
-	send_str(PSTR("\r\n"));
+	Serial.println();
 
 	prom_setup();
 
@@ -490,7 +484,7 @@ read_addr(char* buffer)
 	return;
 
 error:
-	send_str(PSTR("?\r\n"));
+	Serial.println("?");
 }
 
 
@@ -520,8 +514,9 @@ prom_list_send(
 	off += sizeof(prom->name);
 	buf[off++] = '\r';
 	buf[off++] = '\n';
+	buf[off++] = '\0';
 
-	usb_serial_write(buf, off);
+	Serial.print(buf);
 }
 
 
@@ -529,7 +524,7 @@ prom_list_send(
 static void
 prom_list(void)
 {
-	for (int i = 0 ; i < proms_count ; i++)
+	for (unsigned i = 0 ; i < proms_count ; i++)
 	{
 		const prom_t * const p = &proms[i];
 		prom_list_send(i, p, p == prom );
@@ -553,7 +548,7 @@ prom_mode(char* buffer)
 	return;
     }
   }    
-  send_str(PSTR("- No such chip\r\n"));
+  Serial.println("- No such chip");
 }
 
 
@@ -566,7 +561,7 @@ prom_mode(char* buffer)
  *   memory grades on the same/similar pinouts
  * Return 1 on success, 0 otherwise.
  */
-static uint8_t scan(const prom_t* use_prom) {
+static unsigned scan(const prom_t* use_prom) {
   prom = use_prom;
   prom_setup();
   // scan first 256 bytes for varying data
@@ -655,75 +650,11 @@ prom_send(void)
 
 int main(void)
 {
-	// set for 16 MHz clock
-#define CPU_PRESCALE(n) (CLKPR = 0x80, CLKPR = (n))
-	CPU_PRESCALE(0);
-
 	// Disable the ADC
 	ADMUX = 0;
 
-	// initialize the USB, and then wait for the host
-	// to set configuration.  If the Teensy is powered
-	// without a PC connected to the USB port, this 
-	// will wait forever.
-	usb_init();
-	while (!usb_configured()) /* wait */ ;
-	_delay_ms(1000);
+	Serial.begin(115200);
 
-	// wait for the user to run their terminal emulator program
-	// which sets DTR to indicate it is ready to receive.
-	while (!(usb_serial_get_control() & USB_SERIAL_DTR))
-		continue;
-
-
-	// discard anything that was received prior.  Sometimes the
-	// operating system or other software will send a modem
-	// "AT command", which can still be buffered.
-	usb_serial_flush_input();
-
-
-#if 0
-	uint16_t addr = 0;
-	char line[64];
-	uint8_t off = 0;
-
-	send_str(PSTR("Looking for strings\r\n"));
-
-	while (1)
-	{
-		addr++;
-		if (addr == 0)
-			send_str(PSTR("wrap\r\n"));
-
-		uint8_t byte = read_byte(addr);
-		if (byte == 0)
-			continue;
-
-		if (off == 0)
-		{
-			line[off++] = hexdigit(addr >> 12);
-			line[off++] = hexdigit(addr >>  8);
-			line[off++] = hexdigit(addr >>  4);
-			line[off++] = hexdigit(addr >>  0);
-			line[off++] = '=';
-		}
-
-		if (printable(byte))
-		{
-			line[off++] = byte;
-			if (off < sizeof(line) - 2)
-				continue;
-		} else {
-			line[off++] = hexdigit(byte >> 4);
-			line[off++] = hexdigit(byte >> 0);
-		}
-
-		line[off++] = '\r';
-		line[off++] = '\n';
-		usb_serial_write(line, off);
-		off = 0;
-	}
-#else
 	#define MAX_CMD 64
 	char buffer[MAX_CMD];
 	uint8_t buf_idx = 0;
@@ -732,7 +663,7 @@ int main(void)
 		// always put the PROM into tristate so that it is safe
 		// to swap the chips in between readings, and 
 		prom_tristate();
-		send_str(PSTR("> "));
+		Serial.print("> ");
 
 		buf_idx = 0;
 		buffer[buf_idx] = 0;
@@ -742,8 +673,8 @@ int main(void)
 		  // xmodem transfer nak
 		  char c = usb_serial_getchar_echo();
 		  if (c == XMODEM_NAK) { buffer[0] = XMODEM_NAK; buf_idx=1; break; }
-		  if (c == '\n') { send_str(PSTR("\r")); break; }
-		  if (c == '\r') { send_str(PSTR("\n")); break; }
+		  if (c == '\n') { Serial.print("\r"); break; }
+		  if (c == '\r') { Serial.print("\n"); break; }
 		  if (buf_idx < (MAX_CMD-1)) buffer[buf_idx++] = c;
 		}
 		buffer[buf_idx] = 0;
@@ -758,37 +689,13 @@ int main(void)
 		case '\n': break;
 		case '\r': break;
 		default:
-			send_str(PSTR(
+			Serial.print(
 "r000000 Read a hex word from address\r\n"
 "l       List chip modes\r\n"
 "mTYPE   Select chip TYPE\r\n"
 "s       Autoscan for chip type (POTENTIALLY DANGEROUS)\r\n"
-			));
+			);
 			break;
 		}
-	}
-#endif
-}
-
-
-// Send a string to the USB serial port.  The string must be in
-// flash memory, using PSTR
-//
-void send_str(const char *s)
-{
-	char c;
-	while (1) {
-		c = pgm_read_byte(s++);
-		if (!c) break;
-		usb_serial_putchar(c);
-	}
-}
-
-void send_mem_str(const char *s)
-{
-	while (1) {
-	  char c = *(s++);
-	  if (!c) break;
-	  usb_serial_putchar(c);
 	}
 }
