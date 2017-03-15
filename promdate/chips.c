@@ -38,6 +38,40 @@ const prom_t proms[] = {
 	.gnd		= 14,
 },
 {
+    .name       = "M271001",
+    .pins       = 32,
+    .addr_width = 17,
+    .addr_pins  = {
+        12, 11, 10, 9, 8, 7, 6, 5, 27, 26, 23, 25, 4, 28, 29, 3, 2,
+    },
+    .data_width = 8,
+    .data_pins  = {
+        13, 14, 15, 17, 18, 19, 20, 21,
+    },
+    .vcc        = 32,
+    .gnd        = 16,
+    .hi_pins    = { 31 },
+    .lo_pins    = { 22, 24, 1 },
+},
+
+{
+    .name       = "M27C010",
+    .pins       = 32,
+    .addr_width = 17,
+    .addr_pins  = {
+        12, 11, 10, 9, 8, 7, 6, 5, 27, 26, 23, 25, 4, 28, 29, 3, 2,
+    },
+    .data_width = 8,
+    .data_pins  = {
+        13, 14, 15, 17, 18, 19, 20, 21,
+    },
+    .vcc        = 32,
+    .gnd        = 16,
+    .hi_pins    = { 31, 1 },
+    .lo_pins    = { 22, 24 },
+},
+
+{
 	.name		= "M27C256",
 	.pins		= 28,
 	.addr_width	= 15,
@@ -130,6 +164,24 @@ const prom_t proms[] = {
 
 	.vcc		= 28,
 	.gnd		= 14,
+},
+{
+    .name       = "M27C801",
+    .pins       = 32,
+    .addr_width = 20,
+    .addr_pins  = {
+        12, 11, 10,  9,  8,  7,  6,  5,
+        27, 26, 23, 25,  4, 28, 29,  3,
+        2,  30, 31,  1,
+    },
+    .data_width = 8,
+    .data_pins  = {
+        13, 14, 15, 17, 18, 19, 20, 21,
+    },
+    .vcc        = 32,
+    .gnd        = 16,
+    .lo_pins    = { 16, 22, 24 },
+    .hi_pins    = { 32 },
 },
 {
 	.name		= "87C64",
@@ -232,32 +284,6 @@ const prom_t proms[] = {
 
 	.vcc		= 40,
 	.gnd		= 11,
-},
-{
-	// Space laptop
-	.name		= "27C010",
-	.pins		= 32,
-	.addr_width	= 17,
-	.addr_pins	= {
-		12, 11, 10, 9, 8, 7, 6, 5, 27, 26, 23, 25, 4, 28, 29, 3, 2,
-	},
-	.data_width	= 8,
-	.data_pins	= {
-		13, 14, 15, 17, 18, 19, 20, 21,
-	},
-	.hi_pins	= {
-    32, // VCC
-    1,  // VPP
-    31, // PGM'
-	},
-	.lo_pins	= {
-    22, // E'
-    16, // GND
-    24, // G'
-	},
-
-	.vcc		= 32,
-	.gnd		= 16,
 },
 {
 	/** Apple Mac SE PROM chips
@@ -422,6 +448,60 @@ const prom_t proms[] = {
 	.vcc		= 7,
 	.gnd		= 8,
 },
+
+{
+	.name		= "E40 (VT100)",
+	.pins		= 24,
+	.addr_width	= 11,
+	.addr_pins	= {8, 7, 6, 5, 4, 3, 2, 1, 23, 22, 19,},
+	.data_width	= 8,
+	.data_pins	= {9, 10, 11, 13, 14, 15, 16, 17,},
+	.vcc		= 24,
+	.gnd		= 12,
+	.hi_pins	= { 24, 20, },
+	.lo_pins	= { 12, 18, 21, },
+},
+
+{
+	.name		= "E45 (VT100)",
+	.pins		= 24,
+	.addr_width	= 11,
+	.addr_pins	= {8, 7, 6, 5, 4, 3, 2, 1, 23, 22, 19,},
+	.data_width	= 8,
+	.data_pins	= {9, 10, 11, 13, 14, 15, 16, 17,},
+	.vcc		= 24,
+	.gnd		= 12,
+	.hi_pins	= { 24, 20, 18, },
+	.lo_pins	= { 12, 21, },
+},
+
+{
+	.name		= "E52 (VT100)",
+	.pins		= 24,
+	.addr_width	= 11,
+	.addr_pins	= {8, 7, 6, 5, 4, 3, 2, 1, 23, 22, 19,},
+	.data_width	= 8,
+	.data_pins	= {9, 10, 11, 13, 14, 15, 16, 17,},
+	.vcc		= 24,
+	.gnd		= 12,
+	.hi_pins	= { 24, 20, 21, },
+	.lo_pins	= { 12, 18, },
+},
+
+{
+	.name		= "E56 (VT100)",
+	.pins		= 24,
+	.addr_width	= 11,
+	.addr_pins	= {8, 7, 6, 5, 4, 3, 2, 1, 23, 22, 19,},
+	.data_width	= 8,
+	.data_pins	= {9, 10, 11, 13, 14, 15, 16, 17,},
+	.vcc		= 24,
+	.gnd		= 12,
+	.hi_pins	= { 24, 20, 18, 21},
+	.lo_pins	= { 12, },
+},
+
+
 };
 
 const uint16_t proms_count = array_count(proms);
