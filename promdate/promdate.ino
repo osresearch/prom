@@ -17,7 +17,7 @@
 uint8_t recv_str(char *buf, uint8_t size);
 void parse_and_execute_command(const char *buf, uint8_t num);
 
-static uint8_t hexdigit(
+static char hexdigit(
 	uint8_t x
 )
 {
@@ -385,7 +385,7 @@ usb_serial_getchar_echo(void)
 {
 	while (1)
 	{
-		uint16_t c = Serial.read();
+		int16_t c = Serial.read();
 		if (c == -1)
 			continue;
 		Serial.print((char) c);
@@ -409,7 +409,7 @@ hexdigit_parse(
 
 static void
 hex32(
-	uint8_t * buf,
+	char * buf,
 	uint32_t addr
 )
 {
@@ -495,7 +495,7 @@ prom_list_send(
 	int selected
 )
 {
-	uint8_t buf[32];
+	char buf[32];
 	uint8_t off = 0;
 	if (selected)
 	{
