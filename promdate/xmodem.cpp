@@ -46,7 +46,7 @@ xmodem_send(
 		// Wait for an ACK (done), CAN (abort) or NAK (retry)
 		while (1)
 		{
-			uint16_t c = Serial.read();
+			int16_t c = Serial.read();
 			if (c == -1)
 				continue;
 			if (c == XMODEM_ACK)
@@ -74,7 +74,7 @@ xmodem_init(
 	// wait for initial nak
 	while (1)
 	{
-		uint16_t c = Serial.read();
+		int16_t c = Serial.read();
 		if (c == -1)
 			continue;
 		if (c == XMODEM_NAK)
@@ -106,7 +106,7 @@ xmodem_fini(
 
 		while (1)
 		{
-			uint16_t c = Serial.read();
+			int16_t c = Serial.read();
 			if (c == -1)
 				continue;
 			if (c == XMODEM_ACK)
