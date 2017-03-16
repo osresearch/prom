@@ -17,8 +17,7 @@
 uint8_t recv_str(char *buf, uint8_t size);
 void parse_and_execute_command(const char *buf, uint8_t num);
 
-static uint8_t
-hexdigit(
+static uint8_t hexdigit(
 	uint8_t x
 )
 {
