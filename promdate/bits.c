@@ -5,7 +5,7 @@
  * in(0xA3) == PINA & (1 << 3)
  */
 #include <avr/io.h>
-#include <avr/pgmspace.h>
+//#include <avr/pgmspace.h>
 #include "bits.h"
 
 #define set_bit(PORT, PIN, VALUE) do { \
@@ -19,8 +19,7 @@
 	((PORT) & (1 << PIN))
 
 
-void
-ddr(
+void ddr(
 	const uint8_t id,
 	const uint8_t value
 )
@@ -52,8 +51,7 @@ ddr(
 }
 
 
-void
-out(
+void out(
 	const uint8_t id,
 	const uint8_t value
 )

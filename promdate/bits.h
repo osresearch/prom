@@ -9,24 +9,28 @@
 #define _STR(X) #X
 #define STR(X) _STR(X)
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-extern void
-ddr(
+void ddr(
 	const uint8_t port,
 	const uint8_t value
 );
 
 
-extern void
-out(
+void out(
 	const uint8_t port,
 	uint8_t value
 );
 
 
-extern uint8_t
-in(
+uint8_t in(
 	uint8_t port
 );
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
