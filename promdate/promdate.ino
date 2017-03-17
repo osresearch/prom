@@ -511,11 +511,9 @@ prom_list_send(
 	buf[off++] = ' ';
 	memcpy(buf+off, prom->name, sizeof(prom->name));
 	off += sizeof(prom->name);
-	buf[off++] = '\r';
-	buf[off++] = '\n';
 	buf[off++] = '\0';
 
-	Serial.print(buf);
+	Serial.println(buf);
 }
 
 
@@ -672,8 +670,8 @@ void loop()
 		  // xmodem transfer nak
 		  char c = usb_serial_getchar_echo();
 		  if (c == XMODEM_NAK) { buffer[0] = XMODEM_NAK; buf_idx=1; break; }
-		  if (c == '\n') { Serial.print("\r"); break; }
-		  if (c == '\r') { Serial.print("\n"); break; }
+		  if (c == '\n') { Serial.println(""); break; }
+		  if (c == '\r') { continue; }
 		  if (buf_idx < (MAX_CMD-1)) buffer[buf_idx++] = c;
 		}
 		buffer[buf_idx] = 0;
