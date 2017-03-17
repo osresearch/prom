@@ -644,20 +644,20 @@ prom_send(void)
 	xmodem_fini(&xmodem_block);
 }
 
+#define MAX_CMD 64
+char buffer[MAX_CMD];
+uint8_t buf_idx = 0;
 
-
-
-int main(void)
-{
+void setup() {
 	// Disable the ADC
 	ADMUX = 0;
 
 	Serial.begin(115200);
 
-	#define MAX_CMD 64
-	char buffer[MAX_CMD];
-	uint8_t buf_idx = 0;
-	while (1)
+  buf_idx = 0;
+}
+
+void loop()
 	{
 		// always put the PROM into tristate so that it is safe
 		// to swap the chips in between readings, and 
@@ -697,4 +697,3 @@ int main(void)
 			break;
 		}
 	}
-}
